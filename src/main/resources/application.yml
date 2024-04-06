@@ -1,0 +1,11 @@
+application:
+  name: core-api
+# See https://docs.spring.io/spring-cloud-openfeign/docs/current/reference/html/
+spring:
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+foo:
+  url: http://localhost:8090
