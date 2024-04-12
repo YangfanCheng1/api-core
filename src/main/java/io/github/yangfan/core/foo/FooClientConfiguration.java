@@ -1,13 +1,10 @@
 package io.github.yangfan.core.foo;
 
-import feign.RequestInterceptor;
-import feign.Response;
-import feign.RetryableException;
-import feign.Retryer;
+import feign.*;
 import feign.codec.ErrorDecoder;
-import io.github.yangfan.core.common.util.CommonUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.util.Optional;
 
@@ -21,6 +18,13 @@ public class FooClientConfiguration  {
         return requestTemplate -> {
             requestTemplate.header("foo", "bar");
         };
+    }
+
+    // Alternatively, we could bind using application.yml/properties
+    @Profile({"default", "local", "dev"})
+    @Bean
+    Logger.Level logLevel() {
+        return Logger.Level.FULL;
     }
 
     public class CustomDecoder implements ErrorDecoder {

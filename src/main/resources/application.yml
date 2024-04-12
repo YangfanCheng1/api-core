@@ -13,3 +13,13 @@ foo:
 logging:
   pattern:
     level: "%5p [${spring.application.name:}, %X{traceId:-}, %X{spanId:-}]"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: default,local,dev,test
+
+logging:
+  level:
+    io.github.yangfan.core.foo: DEBUG
