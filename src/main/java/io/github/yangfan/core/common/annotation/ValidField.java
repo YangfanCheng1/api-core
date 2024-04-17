@@ -3,6 +3,7 @@ package io.github.yangfan.core.common.annotation;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.lang.annotation.Documented;
@@ -15,6 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @NotBlank
 @Size(min = 1, max = 32)
+@Pattern(regexp = "^[a-zA-Z0-9]+$")
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)
 @Constraint(validatedBy = {})
