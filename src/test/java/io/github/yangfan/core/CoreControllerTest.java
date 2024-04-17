@@ -8,16 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
-import static org.mockito.ArgumentMatchers.contains;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CoreController.class)
 class CoreControllerTest {
@@ -33,7 +29,7 @@ class CoreControllerTest {
     void getFooBar() {
         given(fooService.getFoo(any())).willReturn(new FooBarResponse("cherubim"));
 
-        mockMvc.perform(get("/api/users").queryParam("id", "1"))
+        mockMvc.perform(get("/api/foos").queryParam("id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.value").value("cherubim"));
     }
