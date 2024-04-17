@@ -1,16 +1,27 @@
 package io.github.yangfan.core.common.util;
 
 import lombok.val;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static io.github.yangfan.core.common.util.CommonUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommonUtilTest {
 
+    @Test
     void customMapBuilderTest() {
         val customMap = new CustomImmutableMapBuilder<String, Object>()
                 .putIfValNotNull("milk", "coffee")
@@ -60,4 +71,43 @@ class CommonUtilTest {
         assertThat(ComparableObj.of(left).isGreaterThan(right))
                 .isEqualTo(expected);
     }
+
+
+    @Disabled
+    @Test
+    void LRUCacheTesting() throws InterruptedException {
+        int MAX_SIZE = 1;
+        Map<String, String> cache = Collections.synchronizedMap(new LinkedHashMap<>() {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry eldest) {
+                return size() > MAX_SIZE;
+            }
+        });
+
+        List<Runnable> tasks = Arrays.asList(
+                () -> {
+                    cache.put("k0", "v0");
+                    cache.put("k1", "v1");
+                },
+                () -> {
+                    cache.put("k0", "v0");
+                    cache.put("k2", "v2");
+                }
+        );
+
+        /** we have two threads running in parallel to put values into thread-safe map, however it's hard to simulate race conditions **/
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        CompletableFuture[] futures = tasks.stream()
+                .map(task -> CompletableFuture.runAsync(task, executorService))
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(futures).join();
+        executorService.shutdown();
+
+        assertAll("Checking Cache State",
+                () -> assertTrue(cache.size() == 1),
+                () -> assertFalse(cache.containsKey("k0")),
+                () -> assertTrue((cache.containsKey("k1") || cache.containsKey("k2")))
+        );
+    }
+
 }
