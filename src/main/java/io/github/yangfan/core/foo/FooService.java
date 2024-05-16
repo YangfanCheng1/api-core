@@ -16,4 +16,8 @@ public class FooService {
         val fooResponse = fooClient.getFoo(userId);
         return new FooBarResponse(String.format("%s, %s", fooResponse.getFieldA(), fooResponse.getFieldB()));
     }
+
+    public FooBarResponse addFoo(FooRequest fooRequest) {
+        return null;
+    }
 }
